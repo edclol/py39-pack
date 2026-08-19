@@ -4,9 +4,9 @@ FROM centos:7 AS builder
 RUN yum install -y wget bzip2 && yum clean all
 
 # Install Miniconda
-RUN wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-    bash /tmp/miniconda.sh -b -p /opt/conda && \
-    rm -f /tmp/miniconda.sh
+RUN wget -L https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh -O /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -b -p /opt/miniconda3 \
+    && rm -f /tmp/miniconda.sh
 
 ENV PATH=/opt/conda/bin:$PATH
 
@@ -34,7 +34,7 @@ RUN conda install -n py39 -c conda-forge -y \
 
 # Install remaining packages via pip
 COPY req.txt /tmp/req.txt
-RUN /opt/conda/envs/py39/bin/pip install --no-cache-dir -r /tmp/req.txt
+RUN  conda run -n py39 pip install --no-cache-dir -r  /tmp/req.txt
 
 # Pack the conda environment into a tarball
 RUN conda pack -n py39 -o /tmp/py39.tgz
