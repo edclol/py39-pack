@@ -7,20 +7,20 @@ Build a portable Python 3.9 conda environment packaged as `py39.tgz`, based on C
 ### Pull the image
 
 ```bash
-docker pull ghcr.io/<your-username>/py39-pack
+docker pull ghcr.io/edclol/py39-pack
 ```
 
 ### Extract py39.tgz
 
 **Option 1 — Bind mount a volume:**
 ```bash
-docker run --rm -v $(pwd):/output ghcr.io/<your-username>/py39-pack
+docker run --rm -v $(pwd):/output ghcr.io/edclol/py39-pack
 # → py39.tgz appears in current directory
 ```
 
 **Option 2 — Stream to stdout:**
 ```bash
-docker run --rm ghcr.io/<your-username>/py39-pack > py39.tgz
+docker run --rm ghcr.io/edclol/py39-pack > py39.tgz
 ```
 
 ### Deploy the tgz to a server
@@ -46,4 +46,4 @@ docker run --rm -v $(pwd):/output py39-pack
 
 ## GitHub Container Registry
 
-Push to your GitHub repo → GitHub Actions automatically builds and pushes to `ghcr.io/<your-username>/py39-pack`.
+Push to your GitHub repo → GitHub Actions automatically builds and pushes to `ghcr.io/edclol/py39-pack`.
