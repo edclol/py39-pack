@@ -5,17 +5,19 @@ RUN rm -rf /etc/yum.repos.d/* \
 
 RUN yum install -y wget bzip2 && yum clean all
 
-# Miniforge3 bundles conda + mamba natively
+# Miniforge3 bundles conda + mamba natively, CentOS 7 compatible
 RUN wget -L https://github.com/conda-forge/miniforge/releases/download/23.3.1-1/Miniforge3-23.3.1-1-Linux-x86_64.sh -O /tmp/miniforge.sh \
     && bash /tmp/miniforge.sh -b -p /opt/miniforge3 \
     && rm -f /tmp/miniforge.sh
 
 ENV PATH=/opt/miniforge3/bin:$PATH
 
-RUN conda install -n base -c conda-forge -y conda-pack && conda clean -afy
+# conda-pack is a conda plugin — install with mamba, will still work as "conda pack"
+RUN mamba install -n base -c conda-forge -y conda-pack && mamba clean -afy
 
-RUN mamba create -n py39 python=3.9.20 -c conda-forge -y && conda clean -afy
+RUN mamba create -n py39 python=3.9.20 -c conda-forge -y && mamba clean -afy
 
+# All packages via mamba (conda-forge)
 RUN mamba install -n py39 -c conda-forge -y \
     pymysql pyodbc lxml pandas pytz numpy requests pyyaml cryptography jaydebeapi \
     certifi charset-normalizer contourpy cycler docopt et_xmlfile fonttools greenlet \
@@ -24,13 +26,16 @@ RUN mamba install -n py39 -c conda-forge -y \
     typing_extensions tzdata urllib3 xlsxwriter zipp \
     fastapi uvicorn pydantic pydantic-settings pyjwt httpx python-multipart \
     python-dotenv psycopg2 \
-    && conda clean -afy
+    && mamba clean -afy
 
-RUN conda env export -n py39 > /opt/miniforge3/envs/py39/environment-locked.yml
+# Export locked environment
+RUN mamba env export -n py39 > /opt/miniforge3/envs/py39/environment-locked.yml
 
+# Pip-only packages (not on conda-forge)
 COPY req-pip.txt /tmp/req-pip.txt
 RUN /opt/miniforge3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req-pip.txt
 
+# conda pack is a conda plugin — no mamba equivalent, must stay conda
 RUN conda pack -n py39 -o /tmp/py39.tgz
 
 FROM centos:7
