@@ -14,9 +14,12 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN conda create -n py39 python=3.9.20 -c conda-forge -y && \
     conda clean -afy
 
-# Install packages via conda (handles binary deps better)
+# Install conda-pack in base environment (used to pack py39 later)
+RUN conda install -n base -c conda-forge -y conda-pack && \
+    conda clean -afy
+
+# Install target packages into py39 environment via conda
 RUN conda install -n py39 -c conda-forge -y \
-    conda-pack \
     pymysql \
     pyodbc \
     lxml \
