@@ -15,15 +15,15 @@ ENV PATH=/opt/miniconda3/bin:$PATH
 ENV CONDA_PKGS_DIRS=/opt/miniconda3/pkgs
 
 # Create py39 conda environment
-RUN /opt/miniconda3/bin/conda create -n py39 python=3.9.20 -y \
-    && /opt/miniconda3/bin/conda clean -afy
+RUN conda create -n py39 python=3.9.20 -y \
+    && conda clean -afy
 
 # Install conda-pack in base environment (used to pack py39 later)
-RUN /opt/miniconda3/bin/conda install -n base -y conda-pack \
-    && /opt/miniconda3/bin/conda clean -afy
+RUN conda install -n base -y conda-pack \
+    && conda clean -afy
 
 # Install ALL packages via conda-forge with pinned versions (req.txt - pip-only packages excluded)
-RUN /opt/miniconda3/bin/conda install -n py39 -y \
+RUN conda install -n py39 -y \
     certifi==2024.8.30 \
     charset-normalizer==3.4.0 \
     contourpy==1.3.0 \
@@ -72,14 +72,14 @@ RUN /opt/miniconda3/bin/conda install -n py39 -y \
     python-multipart==0.0.20 \
     python-dotenv==1.0.1 \
     psycopg2==2.9.10 \
-    && /opt/miniconda3/bin/conda clean -afy
+    && conda clean -afy
 
 
 COPY req-pip.txt /tmp/req-pip.txt
 RUN /opt/miniconda3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req-pip.txt
 
 # Pack the conda environment into a tarball
-RUN /opt/miniconda3/bin/conda pack -n py39 -o /tmp/py39.tgz
+RUN conda pack -n py39 -o /tmp/py39.tgz
 
 # ============================
 # Final runtime stage
