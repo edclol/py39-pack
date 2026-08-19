@@ -3,6 +3,9 @@ FROM centos:7 AS builder
 RUN rm -rf /etc/yum.repos.d/* \
     && printf '[base]\nname=CentOS-$releasever - Base - Aliyun\nbaseurl=https://mirrors.aliyun.com/centos-vault/7.9.2009/os/$basearch/\ngpgcheck=0\nenabled=1\n\n[updates]\nname=CentOS-$releasever - Updates - Aliyun\nbaseurl=https://mirrors.aliyun.com/centos-vault/7.9.2009/updates/$basearch/\ngpgcheck=0\nenabled=1\n\n[extras]\nname=CentOS-$releasever - Extras - Aliyun\nbaseurl=https://mirrors.aliyun.com/centos-vault/7.9.2009/extras/$basearch/\ngpgcheck=0\nenabled=1\n' > /etc/yum.repos.d/CentOS-Base.repo
 
+    
+ENV JAVA_HOME=/data/soft/jdk1.8.0_381
+
 # Install prerequisites
 RUN yum install -y wget bzip2 && yum clean all
 
