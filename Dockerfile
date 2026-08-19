@@ -21,6 +21,9 @@ RUN conda create -n py39 python=3.9.20 -y \
 # Install conda-pack in base environment (used to pack py39 later)
 RUN conda install -n base -y conda-pack \
     && conda clean -afy
+    
+RUN conda install -n py39 -y pymysql pyodbc lxml pandas pytz numpy requests pyyaml cryptography JayDeBeApi \
+    && conda clean -afy
 
 # Install ALL packages via conda-forge with pinned versions (req.txt - pip-only packages excluded)
 RUN conda install -n py39 -y \
