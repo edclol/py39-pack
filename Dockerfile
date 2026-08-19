@@ -5,20 +5,17 @@ RUN rm -rf /etc/yum.repos.d/* \
 
 RUN yum install -y wget bzip2 && yum clean all
 
-RUN wget -L https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh -O /tmp/miniconda.sh \
-    && bash /tmp/miniconda.sh -b -p /opt/miniconda3 \
-    && rm -f /tmp/miniconda.sh
+# Miniforge3 bundles conda + mamba natively
+RUN wget -L https://github.com/conda-forge/miniforge/releases/download/23.3.1-1/Miniforge3-23.3.1-1-Linux-x86_64.sh -O /tmp/miniforge.sh \
+    && bash /tmp/miniforge.sh -b -p /opt/miniforge3 \
+    && rm -f /tmp/miniforge.sh
 
-ENV PATH=/opt/miniconda3/bin:$PATH
-
-# Install mamba into base (fast solver, CentOS 7 compatible)
-RUN conda install -n base -c conda-forge -y mamba && conda clean -afy
+ENV PATH=/opt/miniforge3/bin:$PATH
 
 RUN conda install -n base -c conda-forge -y conda-pack && conda clean -afy
 
 RUN mamba create -n py39 python=3.9.20 -c conda-forge -y && conda clean -afy
 
-# Use mamba for fast dependency solving
 RUN mamba install -n py39 -c conda-forge -y \
     pymysql pyodbc lxml pandas pytz numpy requests pyyaml cryptography jaydebeapi \
     certifi charset-normalizer contourpy cycler docopt et_xmlfile fonttools greenlet \
@@ -29,17 +26,17 @@ RUN mamba install -n py39 -c conda-forge -y \
     python-dotenv psycopg2 \
     && conda clean -afy
 
-RUN conda env export -n py39 > /opt/miniconda3/envs/py39/environment-locked.yml
+RUN conda env export -n py39 > /opt/miniforge3/envs/py39/environment-locked.yml
 
 COPY req-pip.txt /tmp/req-pip.txt
-RUN /opt/miniconda3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req-pip.txt
+RUN /opt/miniforge3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req-pip.txt
 
 RUN conda pack -n py39 -o /tmp/py39.tgz
 
 FROM centos:7
 
 COPY --from=builder /tmp/py39.tgz /py39.tgz
-COPY --from=builder /opt/miniconda3/envs/py39/environment-locked.yml /environment-locked.yml
+COPY --from=builder /opt/miniforge3/envs/py39/environment-locked.yml /environment-locked.yml
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
