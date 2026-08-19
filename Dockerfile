@@ -39,9 +39,9 @@ RUN /opt/miniconda3/bin/conda install -n py39 -c conda-forge -y \
     jaydebeapi \
     && /opt/miniconda3/bin/conda clean -afy
 
-# Install remaining packages via pip
-COPY req.txt /tmp/req.txt
-RUN /opt/miniconda3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req.txt
+# Pip-only packages (not available on conda-forge)
+COPY req-pip.txt /tmp/req-pip.txt
+RUN /opt/miniconda3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req-pip.txt
 
 # Pack the conda environment into a tarball
 RUN /opt/miniconda3/bin/conda pack -n py39 -o /tmp/py39.tgz
