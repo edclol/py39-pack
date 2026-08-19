@@ -1,7 +1,6 @@
-Dockerfile
-entrypoint.sh
-req.txt
-.github/
 .git/
 .gitignore
 README.md
+build.sh
+*.tgz
+*.tar.gz
