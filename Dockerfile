@@ -11,14 +11,15 @@ RUN wget -L https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86
 
 ENV PATH=/opt/miniconda3/bin:$PATH
 
-RUN conda create -n py39 python=3.9.20 -c conda-forge -y \
-    && conda clean -afy
+# Install mamba into base (fast solver, CentOS 7 compatible)
+RUN conda install -n base -c conda-forge -y mamba && conda clean -afy
 
-RUN conda install -n base -c conda-forge -y conda-pack \
-    && conda clean -afy
+RUN conda install -n base -c conda-forge -y conda-pack && conda clean -afy
 
-# Install ALL packages from conda-forge (no version pins — conda resolves compatibly)
-RUN conda install -n py39 -c conda-forge -y \
+RUN mamba create -n py39 python=3.9.20 -c conda-forge -y && conda clean -afy
+
+# Use mamba for fast dependency solving
+RUN mamba install -n py39 -c conda-forge -y \
     pymysql pyodbc lxml pandas pytz numpy requests pyyaml cryptography jaydebeapi \
     certifi charset-normalizer contourpy cycler docopt et_xmlfile fonttools greenlet \
     idna importlib_resources jpype1 kiwisolver matplotlib openpyxl packaging patsy \
@@ -28,10 +29,8 @@ RUN conda install -n py39 -c conda-forge -y \
     python-dotenv psycopg2 \
     && conda clean -afy
 
-# Export locked environment for reproducibility
 RUN conda env export -n py39 > /opt/miniconda3/envs/py39/environment-locked.yml
 
-# Pip-only packages (not on conda-forge)
 COPY req-pip.txt /tmp/req-pip.txt
 RUN /opt/miniconda3/envs/py39/bin/pip install --no-cache-dir -r /tmp/req-pip.txt
 
