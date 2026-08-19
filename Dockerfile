@@ -58,7 +58,7 @@ RUN /opt/miniconda3/bin/conda install -n py39 -c conda-forge -y \
     sqlalchemy==2.0.39 \
     statsmodels==0.14.4 \
     typing_extensions==4.12.2 \
-    tzdata==2025.2 \
+    tzdata \
     urllib3==2.2.3 \
     xlsxwriter==3.2.3 \
     zipp==3.21.0 \
