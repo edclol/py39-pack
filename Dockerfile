@@ -12,6 +12,22 @@ RUN wget -L https://github.com/conda-forge/miniforge/releases/download/23.3.1-1/
 
 ENV PATH=/opt/miniforge3/bin:$PATH
 
+RUN mamba config --add channels conda-forge \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2 \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/msys2 \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/menpo \
+    && mamba config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch \
+    && mamba config --set report_errors true \
+    && mamba config --set ssl_verify false \
+    && mamba config --set show_channel_urls yes \
+    && mamba config --show channels
+
+
 # conda-pack is a conda plugin — install with mamba, will still work as "conda pack"
 RUN mamba install -n base -c conda-forge -y conda-pack && mamba clean -afy
 
